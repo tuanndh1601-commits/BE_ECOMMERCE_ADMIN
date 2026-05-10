@@ -1,17 +1,41 @@
+using ECOM.INFRASTRUCTURE.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ======================
+// 🔧 Add services
+// ======================
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();           
+
+// 👉 Auto-inject services
+builder.Services.AddInfrastructure();
+
+// 👉 DB Connection Factory
+builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+
+// ======================
+// 🏗️ Build app
+// ======================
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ======================
+// 🌐 Middleware
+// ======================
+
+// 2. Kích hoạt Middleware (Phải nằm TRƯỚC app.Run)
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ECOM API V1");
+        c.RoutePrefix = "swagger"; // Đường dẫn truy cập sẽ là domain.com/swagger
+    });
 }
 
 app.UseHttpsRedirection();

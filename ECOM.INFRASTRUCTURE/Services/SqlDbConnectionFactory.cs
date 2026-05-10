@@ -9,21 +9,18 @@ namespace ECOM.INFRASTRUCTURE.Services
         IDbConnection CreateConnection();
     }
 
-    internal class SqlDbConnectionFactory : IDbConnectionFactory
+    public class DbConnectionFactory : IDbConnectionFactory
     {
-        private readonly IConfiguration _configuration;
         private readonly string _connectionString;
 
-        public SqlDbConnectionFactory(IConfiguration configuration)
+        public DbConnectionFactory(IConfiguration config)
         {
-            _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+            _connectionString = config.GetConnectionString("DefaultConnection");
         }
 
         public IDbConnection CreateConnection()
         {
-            var connection = new SqlConnection(_connectionString);
-            return connection;
+            return new SqlConnection(_connectionString);
         }
     }
 }

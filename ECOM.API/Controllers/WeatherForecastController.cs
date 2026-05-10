@@ -1,3 +1,4 @@
+using ECOM.INFRASTRUCTURE.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECOM.API.Controllers
@@ -6,21 +7,17 @@ namespace ECOM.API.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries =
-        [
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        ];
-
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        private readonly IMenuService _menuService;
+        public WeatherForecastController(IMenuService menuService)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            _menuService = menuService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var data = await _menuService.GetDataListAsync();
+            return Ok(data);
         }
     }
 }

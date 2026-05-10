@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ECOM.DOMAIN\ECOM.DOMAIN.csproj" />
+    <ProjectReference Include="..\ECOM.INFRASTRUCTURE\ECOM.INFRASTRUCTURE.csproj" />
   </ItemGroup>
 
 </Project>
