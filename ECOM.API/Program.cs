@@ -1,4 +1,10 @@
-using ECOM.INFRASTRUCTURE.Services;
+using ECOM.APPLICATION;
+using ECOM.INFRASTRUCTURE;
+using ECOM.INFRASTRUCTURE.Persistence.Dapper;
+using ECOM.INFRASTRUCTURE.Persistence.EntityFramework;
+using Scalar.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+using ECOM.SHARED.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,14 +15,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();           
+//builder.Services.AddSwaggerGen();
 
 // 👉 Auto-inject services
-builder.Services.AddInfrastructure();
+builder.Services.AddAutoDI(
+    typeof(ApplicationAssembly).Assembly,
+    typeof(InfrastructureAssembly).Assembly
+);
 
-// 👉 DB Connection Factory
-builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
 
+builder.Services.AddScoped<IDapperRepository, DapperRepository>();
+
+
+builder.Services.AddDbContext<BaseDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+});
+
+builder.Services.AddOpenApi();
 // ======================
 // 🏗️ Build app
 // ======================
@@ -30,13 +47,20 @@ var app = builder.Build();
 // 2. Kích hoạt Middleware (Phải nằm TRƯỚC app.Run)
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ECOM API V1");
-        c.RoutePrefix = "swagger"; // Đường dẫn truy cập sẽ là domain.com/swagger
-    });
+
 }
+
+app.MapOpenApi();
+
+app.MapScalarApiReference(options =>
+{
+    options
+        .WithTitle("ECOM API")
+        .WithTheme(ScalarTheme.DeepSpace)
+        .WithDefaultHttpClient(
+            ScalarTarget.CSharp,
+            ScalarClient.HttpClient);
+});
 
 app.UseHttpsRedirection();
 

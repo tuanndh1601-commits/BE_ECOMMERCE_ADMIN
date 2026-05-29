@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ECOM.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private readonly IMenuService _menuService;
@@ -14,6 +13,7 @@ namespace ECOM.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetList")]
         public async Task<IActionResult> Get()
         {
             var data = await _menuService.GetDataListAsync();
