@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ECOM.DOMAIN\ECOM.DOMAIN.csproj" />
-    <ProjectReference Include="..\ECOM.INFRASTRUCTURE\ECOM.INFRASTRUCTURE.csproj" />
+    <ProjectReference Include="..\ECOM.SHARED\ECOM.SHARED.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ namespace ECOM.INFRASTRUCTURE.Persistence.Dapper
         public IDbConnection Create()
         {
             return new SqlConnection(
-                _configuration.GetConnectionString("Default"));
+                _configuration.GetConnectionString("DefaultConnection"));
         }
     }
 }

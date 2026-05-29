@@ -43,7 +43,7 @@ builder.Services.AddScoped<IDapperRepository, DapperRepository>();
 builder.Services.AddDbContext<BaseDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("Default"));
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();
