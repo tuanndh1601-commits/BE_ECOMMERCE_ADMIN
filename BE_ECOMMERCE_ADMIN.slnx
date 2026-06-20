@@ -3,5 +3,4 @@
   <Project Path="ECOM.APPLICATION/ECOM.APPLICATION.csproj" />
   <Project Path="ECOM.DOMAIN/ECOM.DOMAIN.csproj" />
   <Project Path="ECOM.INFRASTRUCTURE/ECOM.INFRASTRUCTURE.csproj" />
-  <Project Path="ECOM.SHARED/ECOM.SHARED.csproj" Id="0f8641df-9e09-4693-89bf-172da4d4559a" />
 </Solution>

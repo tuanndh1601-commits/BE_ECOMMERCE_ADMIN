@@ -8,11 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ECOM.DOMAIN\ECOM.DOMAIN.csproj" />
-    <ProjectReference Include="..\ECOM.SHARED\ECOM.SHARED.csproj" />
   </ItemGroup>
 
 </Project>

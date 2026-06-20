@@ -1,8 +1,7 @@
-using ECOM.APPLICATION;
-using ECOM.INFRASTRUCTURE;
-using ECOM.INFRASTRUCTURE.Persistence.Dapper;
-using ECOM.INFRASTRUCTURE.Persistence.EntityFramework;
-using ECOM.SHARED.Services;
+using ECOM.API.Middlewares;
+using ECOM.APPLICATION.Interfaces.Data;
+using ECOM.INFRASTRUCTURE.Data;
+using ECOM.INFRASTRUCTURE.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -13,8 +12,19 @@ var builder = WebApplication.CreateBuilder(args);
 // SERVICES
 // =========================
 
-builder.Services.AddControllers();
+// 1. Connection String
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// 2. Đăng ký DbContext (EF Core)
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+// 3. Đăng ký DbConnectionFactory (Dapper) dưới dạng Singleton/Scoped tùy chọn kiến trúc
+builder.Services.AddScoped<IDbConnectionFactory>(sp => new SqlConnectionFactory(connectionString));
+
+// Mocking ICurrentUserService để hệ thống tự chạy được luôn (Tạm thời trả về System)
+builder.Services.AddScoped<ICurrentUserService, MockCurrentUserService>();
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Swagger
@@ -28,23 +38,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Auto DI
-builder.Services.AddAutoDI(
-    typeof(ApplicationAssembly).Assembly,
-    typeof(InfrastructureAssembly).Assembly
-);
-
-// Dapper
-builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
-
-builder.Services.AddScoped<IDapperRepository, DapperRepository>();
-
-// EF
-builder.Services.AddDbContext<BaseDbContext>(options =>
-{
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+// Tự động quét và Inject Service/Repository
+builder.Services.AddAutoDependencies();
 
 var app = builder.Build();
 
@@ -52,10 +47,10 @@ var app = builder.Build();
 // MIDDLEWARE
 // =========================
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 // Swagger
@@ -87,3 +82,10 @@ app.UseSwaggerUI(options =>
 });
 
 app.Run();
+
+// Lớp tạm thời để điền Audit logs trước khi làm JWT hoàn chỉnh
+public class MockCurrentUserService : ICurrentUserService
+{
+    public int Id => 0;
+    public string Username => "master";
+}
